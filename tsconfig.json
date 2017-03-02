@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "outDir": "built",
+    "sourceMap": true,
+    "declaration": true,
+    "lib": ["DOM", "es5"],
+    "jsx": "react"
+  },
+  "exclude": [
+    "node_modules", "docs", "coverage", "typings", "built"
+  ]
+}
