@@ -2,21 +2,14 @@ import http = require ('http');
 import fs = require('fs');
 import RenderBuilder from '../renderer';
 import assetsMap = require('./assets-map');
-import MyWeb from './web';
+import Page from './page';
 
-class MyRenderer extends RenderBuilder {
-
-    getBundledAssets(pageName: string): string {
-        return assetsMap[pageName].js;
-    }
-}
-
-let renderer = new MyRenderer().build();
+let renderer = new RenderBuilder().setBundledAssetsMap((x)=> assetsMap[x].js ).build();
 
 let server = http.createServer((req, res)=> {
     if (req.url == '/') {
         res.statusCode = 200;
-        res.end(renderer(MyWeb, {
+        res.end(renderer(Page, {
             title: 'test',
             data: {
                 clock: new Date().toISOString()

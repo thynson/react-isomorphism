@@ -1,17 +1,21 @@
-import IsomorphicBuilder from '.';
+import * as ri from '.';
 import reactDomServer = require('react-dom/server');
 
-abstract class Renderer {
+export default class Renderer {
 
-    abstract getBundledAssets(pageName: string): string;
+
+    private bundledAssetsMap: (pageName: string)=> string;
+
+    setBundledAssetsMap(map: (pageName: string)=> string): this {
+        this.bundledAssetsMap = map;
+        return this;
+    }
 
     build() {
-        return <T>(target: IsomorphicBuilder.RenderTarget<T>, args: IsomorphicBuilder.PageData<T>): string => {
+        return <T>(target: ri.Page<T>, args: ri.PageData<T>): string => {
             return reactDomServer.renderToStaticMarkup(target.render(args, {
-                getBundledAssets: (x:string)=> this.getBundledAssets(x),
+                getBundledAssets: (x:string)=> this.bundledAssetsMap(x),
             }));
         };
     }
 }
-
-export default Renderer;

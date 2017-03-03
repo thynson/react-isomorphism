@@ -13,4 +13,6 @@ npm i react-isomorphism react react-dom --save
 omit them if you've already installed.
 
 ## Usage
+
 See `example` directory. You can run this demo via `npm run demo`.
+    

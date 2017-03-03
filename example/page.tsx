@@ -1,16 +1,14 @@
-import IsomorphicBuilder from '../index';
+import * as ri from '../index';
 import React = require('react');
 
-export interface MyState {
+export interface PageState {
     clock: string;
 }
 
-class MyComponent extends React.Component<MyState,MyState> {
+class PageComponent extends React.Component<PageState,PageState> {
 
-    constructor(props: MyState, ctx){
-        super(props, ctx)
-        this.state = props;
-    }
+    state = this.props;
+
     updateTimestamp = ()=> this.setState({clock: new Date().toISOString() });
 
     render() {
@@ -23,4 +21,4 @@ class MyComponent extends React.Component<MyState,MyState> {
     }
 }
 
-export default new IsomorphicBuilder('web', MyComponent).build();
+export default new ri.PageBuilder('page', PageComponent).build();
