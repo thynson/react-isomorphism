@@ -54,8 +54,7 @@ namespace IsomorphicBuilder {
     }
 
     export interface RenderMetadata {
-        assetsUrlTransformer(assetsUrl: string): string;
-        assetsMap(name: string): string
+        getBundledAssets(name: string): string
     }
     export class RenderTarget<T> {
 
@@ -70,11 +69,11 @@ namespace IsomorphicBuilder {
                 <head>
                     <title>{args.title}</title>
                     <meta id="x-react-render-args"  content={JSON.stringify(args)}/>
-                    <script type="application/javascript" src={env.assetsMap(this.pageName)}/>
+                    <script type="application/javascript" src={env.getBundledAssets(this.pageName)}/>
                 </head>
                 <body>
                     <div id="x-react-container">
-                        {React.createElement(this.componentClass, args.data)}
+                        <this.componentClass {...args.data}/>
                     </div>
                 </body>
             </html>;

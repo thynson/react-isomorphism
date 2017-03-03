@@ -3,14 +3,12 @@ import reactDomServer = require('react-dom/server');
 
 abstract class Renderer {
 
-    abstract getBundleForPage(pageName: string): string;
-    abstract getAssetsUrl(assetsName: string): string
+    abstract getBundledAssets(pageName: string): string;
 
     build() {
         return <T>(target: IsomorphicBuilder.RenderTarget<T>, args: IsomorphicBuilder.PageData<T>): string => {
             return reactDomServer.renderToStaticMarkup(target.render(args, {
-                assetsMap: (x:string)=> this.getBundleForPage(x),
-                assetsUrlTransformer: (x: string)=> this.getAssetsUrl(x),
+                getBundledAssets: (x:string)=> this.getBundledAssets(x),
             }));
         };
     }
