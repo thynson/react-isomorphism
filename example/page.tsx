@@ -1,3 +1,7 @@
+/**
+ * This file defines a page and export its render function
+ */
+
 import * as ri from '../index';
 import React = require('react');
 
