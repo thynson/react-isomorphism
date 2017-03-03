@@ -87,3 +87,4 @@ assets-map.json
 *.js
 *.js.map
 *.d.ts
+!webpack.conf.js
