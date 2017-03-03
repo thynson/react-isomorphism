@@ -84,3 +84,6 @@ jspm_packages
 
 assets/
 assets-map.json
+*.js
+*.js.map
+*.d.ts

@@ -11,9 +11,8 @@ abstract class Renderer {
             return reactDomServer.renderToStaticMarkup(target.render(args, {
                 assetsMap: (x:string)=> this.getBundleForPage(x),
                 assetsUrlTransformer: (x: string)=> this.getAssetsUrl(x),
-            }))
-        }
-
+            }));
+        };
     }
 }
 
