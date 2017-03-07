@@ -1,7 +1,7 @@
 var AssetsPlugin = require('assets-webpack-plugin');
 var webpack = require('webpack');
 module.exports = {
-    entry: { web: './web.tsx' },
+    entry: { page: './page.tsx' },
     output: {
         filename: './assets/[name].[chunkhash].js'
     },
