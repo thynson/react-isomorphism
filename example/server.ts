@@ -28,11 +28,17 @@ let server = http.createServer((req, res)=> {
     } else {
         // Return script-bundle in the assets dir, in real-world application
         // you should use a static file serving component such to do this
-        let outputStream =  fs.createReadStream('.'+req.url);
-        outputStream.on('open', ()=> {
+        let file =  fs.createReadStream('.'+req.url);
+        file.on('open', ()=> {
+
+            file.removeAllListeners('error'); // If file has been opened, just let it crash for any error
             res.statusCode = 200;
             res.setHeader('content-type', 'application/javascript');
-            outputStream.pipe(res);
+            file.pipe(res);
+        }).on('error', ()=> {
+            // Return 404 for any error before open
+            res.statusCode = 404;
+            res.end('Not Found');
         })
     }
 

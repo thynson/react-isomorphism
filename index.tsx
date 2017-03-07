@@ -13,8 +13,8 @@ export class PageBuilder<T> {
     }
 
 
-    onBrowserSide(ready: ()=>void): this {
-        this.domReady.push(ready);
+    appendDomReadyAction(action: ()=>void): this {
+        this.domReady.push(action);
         return this;
     }
 

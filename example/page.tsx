@@ -25,4 +25,8 @@ class PageComponent extends React.Component<PageState,PageState> {
     }
 }
 
-export default new ri.PageBuilder('page', PageComponent).build();
+export default new ri.PageBuilder('page', PageComponent)
+    .appendDomReadyAction(()=>{
+        require('./style.scss');
+    })
+    .build();
