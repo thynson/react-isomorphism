@@ -1,13 +1,19 @@
 {
   "name": "react-isomorphism",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "React Isomorphic Rendering Core Utility",
   "main": "built/index.js",
+  "licenses": [
+    {
+      "type": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    }
+  ],
   "scripts": {
     "prepublish": "tsc",
     "demo": "cd example; rm assets; webpack; ts-node server.ts"
   },
-  "author": "LAN Xingcan",
+  "author": "LAN Xingcan <thynson@live.com>",
   "license": "ISC",
   "devDependencies": {
     "@types/domready": "0.0.29",

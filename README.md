@@ -16,3 +16,5 @@ omit them if you've already installed.
 
 See `example` directory. You can run this demo via `npm run demo`.
     
+## License
+The ISC License
