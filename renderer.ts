@@ -11,11 +11,18 @@ export default class Renderer {
         return this;
     }
 
-    build() {
-        return <T>(target: ri.Page<T>, args: ri.PageData<T>): string => {
-            return reactDomServer.renderToStaticMarkup(target.render(args, {
-                getBundledAssets: (x:string)=> this.bundledAssetsMap(x),
-            }));
-        };
+    build(serverOnly: boolean = false): <T>(target: ri.Page<T>, args: ri.PageData<T>)=> string {
+        if (serverOnly)
+            return <T>(target: ri.Page<T>, args: ri.PageData<T>): string => {
+                return reactDomServer.renderToStaticMarkup(target.render(args, {
+                    getBundledAssets: (x:string)=> this.bundledAssetsMap(x),
+                }));
+            };
+        else
+            return <T>(target: ri.Page<T>, args: ri.PageData<T>): string => {
+                return reactDomServer.renderToString(target.render(args, {
+                    getBundledAssets: (x:string)=> this.bundledAssetsMap(x),
+                }));
+            };
     }
 }
