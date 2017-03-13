@@ -1,6 +1,6 @@
 {
   "name": "react-isomorphism",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "React Isomorphic Rendering Core Utility",
   "main": "built/index.js",
   "licenses": [
