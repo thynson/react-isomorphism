@@ -37,7 +37,7 @@ export class PageBuilder<T> {
             });
 
         }
-        return new Page<T>(this.pageName, this.componentClass);
+        return new ReactPage<T>(this.pageName, this.componentClass);
     }
 }
 
@@ -53,7 +53,10 @@ export interface PageData<T> {
 export interface RenderMetadata {
     getBundledAssets(name: string): string
 }
-export class Page<T> {
+export interface Page<T> {
+    render(args: PageData<T>, env: RenderMetadata): JSX.Element;
+}
+class ReactPage<T> {
 
     constructor(
         private pageName: string,
