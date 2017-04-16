@@ -51,7 +51,8 @@ export interface PageData<T> {
 }
 
 export interface RenderMetadata {
-    getBundledAssets(name: string): string
+    getBundledAssets(name: string): string;
+    renderToString(elements: JSX.Element): string;
 }
 export interface Page<T> {
     render(args: PageData<T>, env: RenderMetadata): JSX.Element;
@@ -65,6 +66,7 @@ class ReactPage<T> {
 
     render(args: PageData<T>, env: RenderMetadata): JSX.Element {
         let htmlAttrs = args.locale != null ? {lang:args.locale} : {};
+        let elementsHtml = env.renderToString(<this.componentClass {...args.data}/>);
         return <html {...htmlAttrs}>
         <head>
             <title>{args.title}</title>
@@ -72,11 +74,10 @@ class ReactPage<T> {
             <script type="application/javascript" src={env.getBundledAssets(this.pageName)}/>
         </head>
         <body>
-        <div id="x-react-container">
-            <this.componentClass {...args.data}/>
-        </div>
+        <div id="x-react-container" dangerouslySetInnerHTML={{__html: elementsHtml}}/>
         </body>
         </html>;
     }
+
 
 }
