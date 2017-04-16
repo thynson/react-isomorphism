@@ -33,6 +33,7 @@ build/Release
 node_modules
 *.ts
 *.tsx
+!*.d.ts
 jspm_packages
 
 # Optional npm cache directory
