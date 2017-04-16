@@ -16,12 +16,12 @@ export default class Renderer {
             return <T>(target: ri.Page<T>, args: ri.PageData<T>): string => {
                 return reactDomServer.renderToStaticMarkup(target.render(args, {
                     getBundledAssets: (x:string)=> this.bundledAssetsMap(x),
-                    renderToString: (elements: JSX.Element)=> reactDomServer.renderToString(elements)
+                    renderToString: (elements: JSX.Element)=> reactDomServer.renderToStaticMarkup(elements)
                 }));
             };
         else
             return <T>(target: ri.Page<T>, args: ri.PageData<T>): string => {
-                return reactDomServer.renderToString(target.render(args, {
+                return reactDomServer.renderToStaticMarkup(target.render(args, {
                     getBundledAssets: (x:string)=> this.bundledAssetsMap(x),
                     renderToString: (elements: JSX.Element)=> reactDomServer.renderToString(elements)
                 }));
