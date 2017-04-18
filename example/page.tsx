@@ -15,12 +15,26 @@ class PageComponent extends React.Component<PageState,PageState> {
 
     updateTimestamp = ()=> this.setState({clock: new Date().toISOString() });
 
+
     render() {
+        // Emulate a large page
+
+        let x = [];
+        for (let i = 0; i < 1000; i++) {
+            x.push(i);
+        }
 
         return <div>
-            <p>Hello world</p>
-            <button onClick={this.updateTimestamp}>Update</button>
-            <p>Timestamp: {this.state.clock}</p>
+            {
+                x.map((x)=> {
+                    return <div>
+                        <p>Hello world ${x}</p>
+                        <button onClick={this.updateTimestamp}>Update</button>
+                        <p>Timestamp: {this.state.clock}</p>
+                    </div>;
+                })
+            }
+
         </div>;
     }
 }
@@ -28,5 +42,8 @@ class PageComponent extends React.Component<PageState,PageState> {
 export default new ri.PageBuilder('page', PageComponent)
     .appendInitAction(()=>{
         require('./style.scss');
+    })
+    .appendDomReadyAction(()=>{
+        alert("page loaded");
     })
     .build();
