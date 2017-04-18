@@ -3,30 +3,42 @@ import ReactDOM = require('react-dom');
 
 
 export class PageBuilder<T> {
-    private title: string;
-    private domReady: Array<()=>void> = [];
+    private _initAction: Array<()=>void> = [];
+    private _domReady: Array<()=>void> = [];
 
     constructor(private pageName: string,
                 private componentClass: React.ComponentClass<T>) {
         this.componentClass = componentClass;
-        this.title = '';
     }
 
 
     appendDomReadyAction(action: ()=>void): this {
-        this.domReady.push(action);
+        this._domReady.push(action);
+        return this;
+    }
+
+    appendInitAction(action: ()=>void):this {
+        this._initAction.push(action);
         return this;
     }
 
     build():Page<T> {
         if (typeof document != 'undefined') {
             // Client side
+            this._initAction.forEach((fn)=> {
+                try {
+                    fn();
+                } catch(e) {
+                    console.error(e);
+                }
+            });
+
             let metaElement = document.getElementById('x-react-render-args');
             let args = JSON.parse(metaElement.getAttribute('content')) as PageData<T>;
             metaElement.remove();
             let element = React.createElement(this.componentClass, args.data);
             require('domready')(()=>{
-                this.domReady.forEach((fn) => {
+                this._domReady.forEach((fn) => {
                     try {
                         fn();
                     } catch (e) {
