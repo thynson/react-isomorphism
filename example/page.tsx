@@ -2,7 +2,7 @@
  * This file defines a page and export its render function
  */
 
-import * as ri from '../index';
+import Isomorphism from '..';
 import React = require('react');
 
 export interface PageState {
@@ -26,9 +26,9 @@ class PageComponent extends React.Component<PageState,PageState> {
 
         return <div>
             {
-                x.map((x)=> {
-                    return <div>
-                        <p>Hello world ${x}</p>
+                x.map((x, idx)=> {
+                    return <div key={idx}>
+                        <p>Hello world {x}</p>
                         <button onClick={this.updateTimestamp}>Update</button>
                         <p>Timestamp: {this.state.clock}</p>
                     </div>;
@@ -39,7 +39,7 @@ class PageComponent extends React.Component<PageState,PageState> {
     }
 }
 
-export default new ri.PageBuilder('page', PageComponent)
+export default new Isomorphism.Builder('page', PageComponent)
     .appendInitAction(()=>{
         require('./style.scss');
     })

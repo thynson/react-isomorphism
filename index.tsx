@@ -1,74 +1,79 @@
 import React = require('react');
 import ReactDOM = require('react-dom');
 
+interface Isomorphism<T> {
+    render(args: Isomorphism.Parameter<T>, env: Isomorphism.Environment): JSX.Element;
+}
 
-export class PageBuilder<T> {
-    private _initAction: Array<()=>void> = [];
-    private _domReady: Array<()=>void> = [];
+namespace Isomorphism {
 
-    constructor(private pageName: string,
-                private componentClass: React.ComponentClass<T>) {
-        this.componentClass = componentClass;
+    export interface Parameter<T> {
+
+        title: string;
+        locale?: string
+        data: T;
     }
 
-
-    appendDomReadyAction(action: ()=>void): this {
-        this._domReady.push(action);
-        return this;
+    export interface Environment {
+        getAssetsUrl(name: string): string;
+        renderToString(elements: JSX.Element): string;
     }
 
-    appendInitAction(action: ()=>void):this {
-        this._initAction.push(action);
-        return this;
-    }
+    export class Builder<T> {
+        private _initAction: Array<()=>void> = [];
+        private _domReady: Array<()=>void> = [];
 
-    build():Page<T> {
-        if (typeof document != 'undefined') {
-            // Client side
-            this._initAction.forEach((fn)=> {
-                try {
-                    fn();
-                } catch(e) {
-                    console.error(e);
-                }
-            });
+        constructor(private pageName: string,
+                    private componentClass: React.ComponentClass<T>) {
+            this.componentClass = componentClass;
+        }
 
-            let metaElement = document.getElementById('x-react-render-args');
-            let args = JSON.parse(metaElement.getAttribute('content')) as PageData<T>;
-            metaElement.remove();
-            let element = React.createElement(this.componentClass, args.data);
-            require('domready')(()=>{
-                this._domReady.forEach((fn) => {
+
+        appendDomReadyAction(action: ()=>void): this {
+            this._domReady.push(action);
+            return this;
+        }
+
+        appendInitAction(action: ()=>void):this {
+            this._initAction.push(action);
+            return this;
+        }
+
+        build(): Isomorphism<T> {
+            if (typeof document != 'undefined') {
+                // Client side
+                this._initAction.forEach((fn)=> {
                     try {
                         fn();
-                    } catch (e) {
+                    } catch(e) {
                         console.error(e);
                     }
                 });
-                ReactDOM.render(element, document.getElementById('x-react-container'));
-            });
 
+                let metaElement = document.getElementById('x-react-render-args');
+                let args = JSON.parse(metaElement.getAttribute('content')) as Isomorphism.Parameter<T>;
+                metaElement.remove();
+                let element = React.createElement(this.componentClass, args.data);
+                require('domready')(()=>{
+                    this._domReady.forEach((fn) => {
+                        try {
+                            fn();
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    });
+                    ReactDOM.render(element, document.getElementById('x-react-container'));
+                });
+
+            }
+            return new ReactPage<T>(this.pageName, this.componentClass);
         }
-        return new ReactPage<T>(this.pageName, this.componentClass);
     }
 }
 
-namespace PageBuilder {
-}
 
-export interface PageData<T> {
-    title: string;
-    locale?: string
-    data: T;
-}
+export default Isomorphism;
 
-export interface RenderMetadata {
-    getBundledAssets(name: string): string;
-    renderToString(elements: JSX.Element): string;
-}
-export interface Page<T> {
-    render(args: PageData<T>, env: RenderMetadata): JSX.Element;
-}
 class ReactPage<T> {
 
     constructor(
@@ -76,20 +81,19 @@ class ReactPage<T> {
         private componentClass: React.ComponentClass<T> ) {
     }
 
-    render(args: PageData<T>, env: RenderMetadata): JSX.Element {
+    render(args: Isomorphism.Parameter<T>, env: Isomorphism.Environment): JSX.Element {
         let htmlAttrs = args.locale != null ? {lang:args.locale} : {};
         let elementsHtml = env.renderToString(<this.componentClass {...args.data}/>);
         return <html {...htmlAttrs}>
         <head>
             <title>{args.title}</title>
             <meta id="x-react-render-args"  content={JSON.stringify(args)}/>
-            <script type="application/javascript" src={env.getBundledAssets(this.pageName)}/>
+            <script type="application/javascript" src={env.getAssetsUrl(this.pageName)}/>
         </head>
         <body>
         <div id="x-react-container" dangerouslySetInnerHTML={{__html: elementsHtml}}/>
         </body>
         </html>;
     }
-
 
 }
