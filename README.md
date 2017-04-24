@@ -1,7 +1,9 @@
 # react-isomorphism
 
-This library provides utilities for React isomorphic rendering in a 
-bundler-friendly approach in a graceful way. 
+This library provides elegant utilities for build react web page and renderer 
+that can be used in both server side and client side, a.k.a. isomorphic 
+rendering, and this library should be friendly with resource bundler like 
+webpack and CDN.
 
 This library is written in Typescript and ships with type definitions.
 You can also use it with plain Javascript, however, you need to take 
@@ -14,17 +16,21 @@ npm i react-isomorphism react react-dom --save
 ```
 
 `react` and `react-dom` are peer dependencies of this library. You may
-want to install `@types/react` and `@types/react-dom` as well.
+want to install `@types/react` and `@types/react-dom` as well if you
+also use Typescript.
 
-## Usage
+## Example Usage
+
+The following steps show you how to use this library and integrate with 
+webpack in Typescript.  
 
 1. Setting up webpack
-    
+
     ```javascript
     var AssetsPlugin = require('assets-webpack-plugin');
     var webpack = require('webpack');
     module.exports = {
-        entry: { home: './home.tsx' },
+        entry: { home: './home-page.tsx' },
         output: {
             filename: './assets/[name].[chunkhash].js'
         },
@@ -47,7 +53,9 @@ want to install `@types/react` and `@types/react-dom` as well.
     ```
     
     This example webpack config file only contains one entry of `home`, usually
-    you have to define more entries.
+    you have to define more entries. The output filename are postfixed with 
+    chunck hash so it should be safe to enable long-term cache if you use a 
+    CDN.
     
     Note that `assets-webpack-plugin` is required to dump an assets map. So 
     that we can find the correct bundle file by entry name. 
