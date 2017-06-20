@@ -20,7 +20,7 @@ class PageComponent extends React.Component<PageState,PageState> {
         // Emulate a large page
 
         let x = [];
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 3; i++) {
             x.push(i);
         }
 

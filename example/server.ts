@@ -4,7 +4,7 @@ import http = require ('http');
 import fs = require('fs');
 
 // the demo page
-import Page from './page';
+import Page, {PageState} from './page';
 
 // import for configuring the render function
 import Renderer from '../renderer';
@@ -13,18 +13,18 @@ import Renderer from '../renderer';
 import assetsMap = require('./assets-map');
 
 
-let renderer = new Renderer.Builder().setAssetsUrlMap((x)=> assetsMap[x].js ).build();
+let renderer = new Renderer.Builder()
+    .setEnableXHTML(true)
+    .setAssetsUrlMap((x)=> assetsMap[x].js ).build();
 
 let server = http.createServer((req, res)=> {
     if (req.url == '/') {
         // Return rendered page
         res.statusCode = 200;
-        res.end(renderer(Page, {
-            title: 'test',
-            data: {
-                clock: new Date().toISOString()
-            }
-        }));
+        res.setHeader('content-type', 'application/xhtml+xml; charset=utf-8');
+        let content = renderer(Page, {title: 'test', data: { clock: new Date().toISOString() }});
+        console.log(content)
+        res.end(content);
     } else {
         // Return script-bundle in the assets dir, in real-world application
         // you should use a static file serving component such to do this
