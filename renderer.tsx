@@ -20,7 +20,7 @@ namespace Renderer {
     }
 
     export const DocumentType = {
-        HTML5: '<!doctype html>\n'
+        HTML5: '<!DOCTYPE html>\n'
     }
 }
 
@@ -72,15 +72,27 @@ namespace Renderer {
                 console.log(htmlAttrs);
                 let meta = self.metadata;
                 let content = ReactDomServer.renderToString(target.render(args.data));
+                let json = JSON.stringify(args.data);
+                let argumentHolder;
+                if (self.enableXHTML) {
+                    // We don't need to escape " and ' in > in script content
+                    // Only escape & and < manually to minify the size
+                    let __html = json.replace(/\&/g, '&amp;').replace(/</g, '&lt;');
+                    console.log(__html);
+                    argumentHolder = <script id='x-render-args-holder'
+                        type='application/json'
+                        dangerouslySetInnerHTML={{__html}} />
+
+                } else {
+                    argumentHolder = <meta id='x-render-args-holder' name='x-render-args-holder' content={json}/>
+                }
                 let htmlElement = <html {...htmlAttrs} >
                             <head>
                                 <title>{args.title}</title>
                                 {
                                     Object.keys(meta).forEach(key=> <meta name={key} content={meta[key]}/> )
                                 }
-                                <script id="x-react-render-args" type='application/json'>
-                                    {JSON.stringify(args.data)}
-                                </script>
+                                {argumentHolder}
 
                                 <script type='application/javascript' src={self.assetsUrlMap(target.pageName)} />
                             </head>

@@ -44,9 +44,20 @@ namespace Isomorphism {
                     }
                 });
 
-                let dataElement = document.getElementById('x-react-render-args');
-                let args = JSON.parse(dataElement.innerHTML) as T ;
-                dataElement.remove();
+                let args: T;
+                let dataElement = document.getElementById('x-render-args-holder');
+                try {
+                    if (!dataElement) 
+                        throw new Error("Element #x-render-args-holder not found");
+                    if (dataElement.tagName.toLowerCase() === 'script')
+                        args = JSON.parse(dataElement.innerHTML) as T ;
+                    else if (dataElement.tagName.toLowerCase() === 'meta') 
+                        args = JSON.parse(dataElement.getAttribute('content')) as T
+                    dataElement.remove();
+                } catch(e) {
+                    console.error(e.message);
+                    alert('Page is not setup properly');
+                }
                 let element = React.createElement(this.componentClass, args);
                 require('domready')(()=>{
                     this._domReady.forEach((fn) => {
