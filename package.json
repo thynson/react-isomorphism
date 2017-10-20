@@ -16,29 +16,27 @@
   "license": "ISC",
   "devDependencies": {
     "@types/domready": "0.0.29",
-    "@types/node": "^7.0.5",
-    "@types/react": "^15.0.29",
-    "@types/react-dom": "^0.14.23",
+    "@types/node": "^8.0.46",
+    "@types/react": "^16.0.15",
+    "@types/react-dom": "^16.0.2",
     "assets-webpack-plugin": "^3.5.1",
-    "coveralls": "^2.11.16",
-    "css-loader": "^0.26.2",
-    "istanbul": "^1.1.0-alpha.1",
+    "css-loader": "^0.28.7",
     "node-sass": "^4.5.0",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "sass-loader": "^6.0.2",
-    "style-loader": "^0.13.2",
-    "ts-loader": "^2.0.1",
-    "ts-node": "^2.1.0",
-    "typescript": "^2.4.0"
+    "style-loader": "^0.19.0",
+    "ts-loader": "^3.0.0",
+    "ts-node": "^3.0.0",
+    "typescript": "^2.4.0",
+    "webpack": "^3.0.0"
   },
   "peerDependencies": {
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
   },
   "dependencies": {
-    "domready": "^0.3.0",
-    "webpack": "^3.0.0"
+    "domready": "^0.3.0"
   },
   "engine": {
     "node": "^4.0.0"
