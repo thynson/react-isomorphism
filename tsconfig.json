@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es2015",
     "target": "es5",
     "sourceMap": true,
     "declaration": true,
     "lib": ["DOM", "es5", "es2015"],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "jsx": "react"
   },
   "exclude": [

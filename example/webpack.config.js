@@ -10,7 +10,7 @@ module.exports = {
     },
     devtool: 'source-map',
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.tsx?$/, loader: 'ts-loader'
             },
@@ -30,14 +30,17 @@ module.exports = {
             }
         ]
     },
+    optimization: {
+      minimize: true
+    },
+    mode: 'production',
     plugins: [
         new AssetsPlugin({filename: './assets-map.json', prettyPrint: true, path: '.'}),
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': '"production"'
             }
-        }),
-        new webpack.optimize.UglifyJsPlugin()
+        })
 
     ]
 };

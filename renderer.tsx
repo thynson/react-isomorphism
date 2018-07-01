@@ -77,7 +77,7 @@ namespace Renderer {
                 if (self.enableXHTML) {
                     // We don't need to escape " and ' in > in script content
                     // Only escape & and < manually to minify the size
-                    let __html = json.replace(/\&/g, '&amp;').replace(/</g, '&lt;');
+                    let __html = json.replace(/&/g, '&amp;').replace(/</g, '&lt;');
                     console.log(__html);
                     argumentHolder = <script id='x-render-args-holder'
                         type='application/json'

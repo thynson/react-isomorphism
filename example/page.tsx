@@ -3,7 +3,7 @@
  */
 
 import Isomorphism from '..';
-import React = require('react');
+import React from 'react';
 
 export interface PageState {
     clock: string;
