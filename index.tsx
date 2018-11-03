@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import whenDomReady from 'when-dom-ready';
 
 interface Isomorphism<T> {
     pageName: string;
+
     render(args: T): JSX.Element;
 }
 
@@ -10,12 +12,13 @@ namespace Isomorphism {
 
     export interface Environment {
         getAssetsUrl(name: string): string;
+
         renderToString(elements: JSX.Element): string;
     }
 
     export class Builder<T> {
-        private _initAction: Array<()=>void> = [];
-        private _domReady: Array<()=>void> = [];
+        private _initAction: Array<() => void> = [];
+        private _domReady: Array<() => void> = [];
 
 
         constructor(private pageName: string,
@@ -23,12 +26,12 @@ namespace Isomorphism {
             this.componentClass = componentClass;
         }
 
-        appendDomReadyAction(action: ()=>void): this {
+        appendDomReadyAction(action: () => void): this {
             this._domReady.push(action);
             return this;
         }
 
-        appendInitAction(action: ()=>void):this {
+        appendInitAction(action: () => void): this {
             this._initAction.push(action);
             return this;
         }
@@ -36,10 +39,10 @@ namespace Isomorphism {
         build(): Isomorphism<T> {
             if (typeof document != 'undefined') {
                 // Client side
-                this._initAction.forEach((fn)=> {
+                this._initAction.forEach((fn) => {
                     try {
                         fn();
-                    } catch(e) {
+                    } catch (e) {
                         console.error(e);
                     }
                 });
@@ -47,29 +50,30 @@ namespace Isomorphism {
                 let args: T;
                 let dataElement = document.getElementById('x-render-args-holder');
                 try {
-                    if (!dataElement) 
+                    if (!dataElement)
                         throw new Error("Element #x-render-args-holder not found");
                     if (dataElement.tagName.toLowerCase() === 'script')
-                        args = JSON.parse(dataElement.innerHTML) as T ;
-                    else if (dataElement.tagName.toLowerCase() === 'meta') 
+                        args = JSON.parse(dataElement.innerHTML) as T;
+                    else if (dataElement.tagName.toLowerCase() === 'meta')
                         args = JSON.parse(dataElement.getAttribute('content')) as T
                     dataElement.remove();
-                } catch(e) {
+                } catch (e) {
                     console.error(e.message);
                     alert('Page is not setup properly');
                 }
                 let element = React.createElement(this.componentClass, args);
-                require('domready')(()=>{
-                    this._domReady.forEach((fn) => {
-                        try {
-                            fn();
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    });
-                    ReactDOM.render(element, document.getElementById('x-react-container'));
-                });
+                whenDomReady()
+                    .then(() => {
 
+                        this._domReady.forEach((fn) => {
+                            try {
+                                fn();
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        });
+                        ReactDOM.render(element, document.getElementById('x-react-container'));
+                    });
             }
             return new ReactPage<T>(this.pageName, this.componentClass);
         }
