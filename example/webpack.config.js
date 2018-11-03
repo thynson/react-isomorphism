@@ -1,9 +1,9 @@
 var AssetsPlugin = require('assets-webpack-plugin');
 var webpack = require('webpack');
 module.exports = {
-    entry: { page: './page.tsx' },
+    entry: {page: './page.tsx'},
     output: {
-        filename: './assets/[name].[chunkhash].js'
+        filename: './assets/[name].[contenthash].js'
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx', '.json']
@@ -31,11 +31,14 @@ module.exports = {
         ]
     },
     optimization: {
-      minimize: true
+        minimize: true,
+        splitChunks: {
+            chunks: 'all'
+        }
     },
     mode: 'production',
     plugins: [
-        new AssetsPlugin({filename: './assets-map.json', prettyPrint: true, path: '.'}),
+        new AssetsPlugin({filename: './assets-map.json', prettyPrint: true, path: '.', entrypoints: true}),
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': '"production"'

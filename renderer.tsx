@@ -26,14 +26,14 @@ namespace Renderer {
 
 namespace Renderer {
     export class Builder {
-    
-    
-        private assetsUrlMap: (pageName: string)=> string;
+
+
+        private assetsUrlMap: (pageName: string)=> string[];
         private docType: string = Renderer.DocumentType.HTML5;
         private enableXHTML: boolean = false;
         private metadata: Renderer.MetadataTable = {};
 
-        setAssetsUrlMap(map: (pageName: string)=> string): this {
+        setAssetsUrlMap(map: (pageName: string)=> string[]): this {
             this.assetsUrlMap = map;
             return this;
         }
@@ -44,7 +44,7 @@ namespace Renderer {
             this.docType = docType;
             return this;
         }
-        
+
         setEnableXHTML(enabled: boolean): this{
             this.enableXHTML = enabled;
             return this;
@@ -54,14 +54,14 @@ namespace Renderer {
             this.metadata[name] = value;
             return this;
         }
-    
+
         build(): Renderer {
 
             let self = this; // Typescript bug??? workaround for <T>()=> {...} recognized as JSX syntax
             return function <T> (this: undefined, target: Isomorphism<T>, args: Renderer.Parameter<T>): string {
 
                 let htmlAttrs = {};
-                if (self.enableXHTML){ 
+                if (self.enableXHTML){
                     htmlAttrs['xmlns'] = "http://www.w3.org/1999/xhtml";
                     if (args.locale)
                         htmlAttrs['xml:lang'] = args.locale
@@ -90,11 +90,16 @@ namespace Renderer {
                             <head>
                                 <title>{args.title}</title>
                                 {
-                                    Object.keys(meta).forEach(key=> <meta name={key} content={meta[key]}/> )
+                                    Object.keys(meta).map(key=> <meta name={key} content={meta[key]}/> )
                                 }
                                 {argumentHolder}
 
-                                <script type='application/javascript' src={self.assetsUrlMap(target.pageName)} />
+                                {
+                                    self.assetsUrlMap((target.pageName)).map((scriptName)=> {
+                                        return <script type='application/javascript' src={scriptName}/>
+                                    })
+                                }
+                                {/*<script type='application/javascript' src={self.assetsUrlMap(target.pageName)} />*/}
                             </head>
                             <body>
                                 <div id="x-react-container" dangerouslySetInnerHTML={{__html: content}} />
