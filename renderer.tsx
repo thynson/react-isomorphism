@@ -3,7 +3,7 @@ import * as ReactDomServer from 'react-dom/server';
 import * as React from 'react';
 
 interface Renderer {
-    <T> (target: Isomorphism<T>, parameter: Renderer.Parameter<T>): string
+    <T> (target: Isomorphism<T>, parameter: Renderer.Parameter<T>, output: NodeJS.WritableStream): void
 }
 
 namespace Renderer {
@@ -58,7 +58,10 @@ namespace Renderer {
         build(): Renderer {
 
             let self = this; // Typescript bug??? workaround for <T>()=> {...} recognized as JSX syntax
-            return function <T> (this: undefined, target: Isomorphism<T>, args: Renderer.Parameter<T>): string {
+            return function <T> (this: undefined,
+                                 target: Isomorphism<T>,
+                                 args: Renderer.Parameter<T>,
+                                 output: NodeJS.WritableStream){
 
                 let htmlAttrs = {};
                 if (self.enableXHTML){
@@ -69,7 +72,6 @@ namespace Renderer {
                     if (args.locale)
                         htmlAttrs['lang'] = args.locale
                 }
-                console.log(htmlAttrs);
                 let meta = self.metadata;
                 let content = ReactDomServer.renderToString(target.render(args.data));
                 let json = JSON.stringify(args.data);
@@ -78,7 +80,6 @@ namespace Renderer {
                     // We don't need to escape " and ' in > in script content
                     // Only escape & and < manually to minify the size
                     let __html = json.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-                    console.log(__html);
                     argumentHolder = <script id='x-render-args-holder'
                         type='application/json'
                         dangerouslySetInnerHTML={{__html}} />
@@ -86,27 +87,29 @@ namespace Renderer {
                 } else {
                     argumentHolder = <meta id='x-render-args-holder' name='x-render-args-holder' content={json}/>
                 }
-                let htmlElement = <html {...htmlAttrs} >
-                            <head>
-                                <title>{args.title}</title>
-                                {
-                                    Object.keys(meta).map(key=> <meta name={key} content={meta[key]}/> )
-                                }
-                                {argumentHolder}
-
-                                {
-                                    self.assetsUrlMap((target.pageName)).map((scriptName)=> {
-                                        return <script type='application/javascript' src={scriptName}/>
-                                    })
-                                }
-                                {/*<script type='application/javascript' src={self.assetsUrlMap(target.pageName)} />*/}
-                            </head>
-                            <body>
-                                <div id="x-react-container" dangerouslySetInnerHTML={{__html: content}} />
-                            </body>
-                        </html>;
-                let htmlContent = ReactDomServer.renderToStaticMarkup(htmlElement);
-                return self.docType + htmlContent;
+                let htmlElement = (
+                    <html {...htmlAttrs} >
+                        <head>
+                            <title>{args.title}</title>
+                            {argumentHolder}
+                            {
+                                Object.keys(meta).map((key, idx) => {
+                                    return <meta key={`meta-${idx}`} name={key} content={meta[key]}/>;
+                                })
+                            }
+                            {
+                                self.assetsUrlMap((target.pageName)).map((scriptName, idx)=> {
+                                    return <script key={`script-${idx}`} type='application/javascript' src={scriptName}/>
+                                })
+                            }
+                        </head>
+                        <body>
+                            <div id="x-react-container" dangerouslySetInnerHTML={{__html: content}} />
+                        </body>
+                    </html>
+                );
+                output.write(self.docType);
+                ReactDomServer.renderToStaticNodeStream(htmlElement).pipe(output);
             }
         }
     }

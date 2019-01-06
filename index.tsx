@@ -22,8 +22,8 @@ namespace Isomorphism {
 
 
         constructor(private pageName: string,
-                    private componentClass: React.ComponentClass<T>) {
-            this.componentClass = componentClass;
+                    private readonly componentClass: React.ComponentClass<T>,
+                    private readonly renderArgsHolderId = 'x-render-args-holder') {
         }
 
         appendDomReadyAction(action: () => void): this {
@@ -48,10 +48,10 @@ namespace Isomorphism {
                 });
 
                 let args: T;
-                let dataElement = document.getElementById('x-render-args-holder');
+                let dataElement = document.getElementById(this.renderArgsHolderId);
                 try {
                     if (!dataElement)
-                        throw new Error("Element #x-render-args-holder not found");
+                        throw new Error(`Element #${this.renderArgsHolderId} not found`);
                     if (dataElement.tagName.toLowerCase() === 'script')
                         args = JSON.parse(dataElement.innerHTML) as T;
                     else if (dataElement.tagName.toLowerCase() === 'meta')
@@ -72,7 +72,7 @@ namespace Isomorphism {
                                 console.error(e);
                             }
                         });
-                        ReactDOM.render(element, document.getElementById('x-react-container'));
+                        ReactDOM.hydrate(element, document.getElementById('x-react-container'));
                     });
             }
             return new ReactPage<T>(this.pageName, this.componentClass);

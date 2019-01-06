@@ -25,9 +25,7 @@ let server = http.createServer((req, res)=> {
         res.statusCode = 200;
         let contentType = enableXHTML ? 'application/xhtml+xml; charset=utf-8' : 'text/html; charset=utf-8';
         res.setHeader('content-type', contentType);
-        let content = renderer(Page, {title: 'test', data: { clock: new Date().toISOString() }});
-        console.log(content)
-        res.end(content);
+        renderer(Page, {title: 'test', data: { clock: new Date().toISOString() }}, res);
     } else {
         // Return script-bundle in the assets dir, in real-world application
         // you should use a static file serving component such to do this
