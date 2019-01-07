@@ -64,7 +64,7 @@ namespace Isomorphism {
                 let element = React.createElement(this.componentClass, args);
                 whenDomReady()
                     .then(() => {
-
+                        ReactDOM.hydrate(element, document.getElementById('x-react-container'));
                         this._domReady.forEach((fn) => {
                             try {
                                 fn();
@@ -72,7 +72,6 @@ namespace Isomorphism {
                                 console.error(e);
                             }
                         });
-                        ReactDOM.hydrate(element, document.getElementById('x-react-container'));
                     });
             }
             return new ReactPage<T>(this.pageName, this.componentClass);
