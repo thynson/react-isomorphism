@@ -109,7 +109,7 @@ namespace Renderer {
                     </html>
                 );
                 output.write(self.docType);
-                ReactDomServer.renderToStaticNodeStream(htmlElement).pipe(output);
+                ReactDomServer.renderToNodeStream(htmlElement).pipe(output);
             }
         }
     }

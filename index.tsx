@@ -10,19 +10,13 @@ interface Isomorphism<T> {
 
 namespace Isomorphism {
 
-    export interface Environment {
-        getAssetsUrl(name: string): string;
-
-        renderToString(elements: JSX.Element): string;
-    }
-
     export class Builder<T> {
         private _initAction: Array<() => void> = [];
         private _domReady: Array<() => void> = [];
 
 
         constructor(private pageName: string,
-                    private readonly componentClass: React.ComponentClass<T>,
+                    private readonly renderer: (args: T, isBorserSide: boolean) => JSX.Element,
                     private readonly renderArgsHolderId = 'x-render-args-holder') {
         }
 
@@ -55,13 +49,13 @@ namespace Isomorphism {
                     if (dataElement.tagName.toLowerCase() === 'script')
                         args = JSON.parse(dataElement.innerHTML) as T;
                     else if (dataElement.tagName.toLowerCase() === 'meta')
-                        args = JSON.parse(dataElement.getAttribute('content')) as T
+                        args = JSON.parse(dataElement.getAttribute('content')) as T;
                     dataElement.remove();
                 } catch (e) {
                     console.error(e.message);
                     alert('Page is not setup properly');
                 }
-                let element = React.createElement(this.componentClass, args);
+                let element = this.renderer(args, true);
                 whenDomReady()
                     .then(() => {
                         ReactDOM.hydrate(element, document.getElementById('x-react-container'));
@@ -74,7 +68,7 @@ namespace Isomorphism {
                         });
                     });
             }
-            return new ReactPage<T>(this.pageName, this.componentClass);
+            return new ReactPage<T>(this.pageName, this.renderer);
         }
     }
 }
@@ -87,11 +81,11 @@ class ReactPage<T> {
 
     constructor(
         public pageName: string,
-        private componentClass: React.ComponentClass<T>) {
+        private renderer: (args: T, isBrowserSide: boolean) => JSX.Element) {
     }
 
     render(args: T): JSX.Element {
-        return <this.componentClass {...args}/>;
+        return this.renderer(args, false);
     }
 
 }
